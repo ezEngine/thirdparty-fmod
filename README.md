@@ -1,6 +1,6 @@
 # Thirdparty Code: FMOD
 
-This repository hold the headers and libs required to build ezEngine with FMOD support enabled.
+This repository holds the headers and libs required to build ezEngine with FMOD support enabled.
 
 See the documentation about the EZ [FMOD integration](https://ezengine.net/pages/docs/sound/fmod-overview.html).
 
