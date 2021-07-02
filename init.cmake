@@ -23,15 +23,12 @@ function(ez_link_target_fmod TARGET_NAME)
 
 	ez_requires_fmod()
 
-	if (EZFMOD_FOUND)
-        target_link_libraries(${TARGET_NAME} PRIVATE ezFmod::Studio)
+    target_link_libraries(${TARGET_NAME} PRIVATE ezFmod::Studio)
 
-        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:ezFmod::Studio> $<TARGET_FILE_DIR:${TARGET_NAME}>
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:ezFmod::Studio> $<TARGET_FILE_DIR:${TARGET_NAME}>
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:ezFmod::Core> $<TARGET_FILE_DIR:${TARGET_NAME}>
-	  )
-
-	endif()
+  )
 
 endfunction()
 
