@@ -231,7 +231,8 @@ namespace FMOD
         DSP_PARAMETER_DATA_TYPE_3DATTRIBUTES =              -2,
         DSP_PARAMETER_DATA_TYPE_SIDECHAIN =                 -3,
         DSP_PARAMETER_DATA_TYPE_FFT =                       -4,
-        DSP_PARAMETER_DATA_TYPE_3DATTRIBUTES_MULTI =        -5
+        DSP_PARAMETER_DATA_TYPE_3DATTRIBUTES_MULTI =        -5,
+        DSP_PARAMETER_DATA_TYPE_ATTENUATION_RANGE =         -6
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -325,6 +326,13 @@ namespace FMOD
     {
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public float[] channelweight;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct DSP_PARAMETER_ATTENUATION_RANGE
+    {
+        public float min;
+        public float max;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -515,7 +523,7 @@ namespace FMOD
     public enum DSP_NORMALIZE : int
     {
         FADETIME,
-        THRESHHOLD,
+        THRESHOLD,
         MAXAMP
     }
 
@@ -702,6 +710,8 @@ namespace FMOD
         OVERALL_GAIN,
         SURROUND_SPEAKER_MODE,
         _2D_HEIGHT_BLEND,
+        ATTENUATION_RANGE,
+        OVERRIDE_RANGE
     }
 
     public enum DSP_THREE_EQ_CROSSOVERSLOPE_TYPE : int
@@ -880,6 +890,8 @@ namespace FMOD
         _3D_SOUND_SIZE,
         _3D_MIN_EXTENT,
         OVERALL_GAIN,
-        OUTPUTGAIN
+        OUTPUTGAIN,
+        ATTENUATION_RANGE,
+        OVERRIDE_RANGE
     }
 }

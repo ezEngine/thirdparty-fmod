@@ -19,8 +19,8 @@ namespace FMOD
     */
     public partial class VERSION
     {
-        public const int    number = 0x00020110;
-#if !UNITY_2017_4_OR_NEWER
+        public const int    number = 0x00020205;
+#if !UNITY_2019_4_OR_NEWER
         public const string dll    = "fmod";
 #endif
     }
@@ -147,6 +147,15 @@ namespace FMOD
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public partial struct GUID
+    {
+        public int Data1;
+        public int Data2;
+        public int Data3;
+        public int Data4;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct ASYNCREADINFO
     {
         public IntPtr   handle;
@@ -183,8 +192,22 @@ namespace FMOD
         NNAUDIO,
         WINSONIC,
         AAUDIO,
+        AUDIOWORKLET,
 
         MAX,
+    }
+
+    public enum PORT_TYPE : int
+    {
+        MUSIC,
+        COPYRIGHT_MUSIC,
+        VOICE,
+        CONTROLLER,
+        PERSONAL,
+        VIBRATION,
+        AUX,
+
+        MAX
     }
 
     public enum DEBUG_MODE : int
@@ -480,6 +503,17 @@ namespace FMOD
         public  StringWrapper               functionparams;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CPU_USAGE
+    {
+        public float    dsp;                    /* DSP mixing CPU usage. */
+        public float    stream;                 /* Streaming engine CPU usage. */
+        public float    geometry;               /* Geometry engine CPU usage. */
+        public float    update;                 /* System::update CPU usage. */
+        public float    convolution1;           /* Convolution reverb processing thread #1 CPU usage */
+        public float    convolution2;           /* Convolution reverb processing thread #2 CPU usage */ 
+    }
+
     [Flags]
     public enum SYSTEM_CALLBACK_TYPE : uint
     {
@@ -736,6 +770,7 @@ namespace FMOD
         public DSP_RESAMPLER       resamplerMethod;
         public uint                randomSeed;
         public int                 maxConvolutionThreads;
+        public int                 maxOpusCodecs;
     }
 
     [Flags]
@@ -783,7 +818,7 @@ namespace FMOD
         MIXER               = 80  * 1024,
         FEEDER              = 16  * 1024,
         STREAM              = 96  * 1024,
-        FILE                = 48  * 1024,
+        FILE                = 64  * 1024,
         NONBLOCKING         = 112 * 1024,
         RECORD              = 16  * 1024,
         GEOMETRY            = 48  * 1024,
@@ -796,7 +831,7 @@ namespace FMOD
     }
 
     [Flags]
-    public enum THREAD_AFFINITY : long // avoid ulong for Bolt compatibility
+    public enum THREAD_AFFINITY : long
     {
         /* Platform agnostic thread groupings */
         GROUP_DEFAULT       = 0x4000000000000000,
@@ -865,12 +900,12 @@ namespace FMOD
     {
         public static RESULT System_Create(out System system)
         {
-            return FMOD5_System_Create(out system.handle);
+            return FMOD5_System_Create(out system.handle, VERSION.number);
         }
 
         #region importfunctions
         [DllImport(VERSION.dll)]
-        private static extern RESULT FMOD5_System_Create(out IntPtr system);
+        private static extern RESULT FMOD5_System_Create(out IntPtr system, uint headerversion);
 
         #endregion
     }
@@ -920,11 +955,6 @@ namespace FMOD
     {
         public static RESULT SetAttributes(THREAD_TYPE type, THREAD_AFFINITY affinity = THREAD_AFFINITY.GROUP_DEFAULT, THREAD_PRIORITY priority = THREAD_PRIORITY.DEFAULT, THREAD_STACK_SIZE stacksize = THREAD_STACK_SIZE.DEFAULT)
         {
-            if ((affinity & THREAD_AFFINITY.GROUP_DEFAULT) != 0)
-            {
-                affinity &= ~THREAD_AFFINITY.GROUP_DEFAULT;
-                affinity = (THREAD_AFFINITY)(((ulong)affinity) | 0x8000000000000000);
-            }
             return FMOD5_Thread_SetAttributes(type, affinity, priority, stacksize);
         }
 
@@ -1209,13 +1239,9 @@ namespace FMOD
         {
             return FMOD5_System_GetChannelsPlaying(this.handle, out channels, out realchannels);
         }
-        public RESULT getCPUUsage(out float dsp, out float stream, out float geometry, out float update, out float total)
+        public RESULT getCPUUsage(out CPU_USAGE usage)
         {
-            return FMOD5_System_GetCPUUsage(this.handle, out dsp, out stream, out geometry, out update, out total);
-        }
-        public RESULT getCPUUsageEx(out float convolutionThread1, out float convolutionThread2)
-        {
-            return FMOD5_System_GetCPUUsageEx(this.handle, out convolutionThread1, out convolutionThread2);
+            return FMOD5_System_GetCPUUsage(this.handle, out usage);
         }
         public RESULT getFileUsage(out Int64 sampleBytesRead, out Int64 streamBytesRead, out Int64 otherBytesRead)
         {
@@ -1319,7 +1345,7 @@ namespace FMOD
         }
 
         // Routing to ports.
-        public RESULT attachChannelGroupToPort(uint portType, ulong portIndex, ChannelGroup channelgroup, bool passThru = false)
+        public RESULT attachChannelGroupToPort(PORT_TYPE portType, ulong portIndex, ChannelGroup channelgroup, bool passThru = false)
         {
             return FMOD5_System_AttachChannelGroupToPort(this.handle, portType, portIndex, channelgroup.handle, passThru);
         }
@@ -1562,9 +1588,7 @@ namespace FMOD
         [DllImport(VERSION.dll)]
         private static extern RESULT FMOD5_System_GetChannelsPlaying        (IntPtr system, out int channels, out int realchannels);
         [DllImport(VERSION.dll)]
-        private static extern RESULT FMOD5_System_GetCPUUsage               (IntPtr system, out float dsp, out float stream, out float geometry, out float update, out float total);
-        [DllImport(VERSION.dll)]
-        private static extern RESULT FMOD5_System_GetCPUUsageEx             (IntPtr system, out float convolutionThread1, out float convolutionThread2);
+        private static extern RESULT FMOD5_System_GetCPUUsage               (IntPtr system, out CPU_USAGE usage);
         [DllImport(VERSION.dll)]
         private static extern RESULT FMOD5_System_GetFileUsage              (IntPtr system, out Int64 sampleBytesRead, out Int64 streamBytesRead, out Int64 otherBytesRead);
         [DllImport(VERSION.dll)]
@@ -1598,7 +1622,7 @@ namespace FMOD
         [DllImport(VERSION.dll)]
         private static extern RESULT FMOD5_System_GetMasterSoundGroup       (IntPtr system, out IntPtr soundgroup);
         [DllImport(VERSION.dll)]
-        private static extern RESULT FMOD5_System_AttachChannelGroupToPort  (IntPtr system, uint portType, ulong portIndex, IntPtr channelgroup, bool passThru);
+        private static extern RESULT FMOD5_System_AttachChannelGroupToPort  (IntPtr system, PORT_TYPE portType, ulong portIndex, IntPtr channelgroup, bool passThru);
         [DllImport(VERSION.dll)]
         private static extern RESULT FMOD5_System_DetachChannelGroupFromPort(IntPtr system, IntPtr channelgroup);
         [DllImport(VERSION.dll)]

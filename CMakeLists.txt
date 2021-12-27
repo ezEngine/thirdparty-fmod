@@ -5,11 +5,11 @@ ez_requires_fmod()
 if (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	# UWP builds
 
-	find_path(EZ_FMOD_DIR api/core/inc/fmod.h
-		PATHS
-		[HKEY_CURRENT_USER\\Software\\FMOD\ Studio\ API\ Universal\ Windows\ Platform]
-		${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/windows-uwp
-		)
+	if (EZ_FMOD_USE_CUSTOM_INSTALLATION)
+		set(FMOD_SEARCH_PATH "[HKEY_CURRENT_USER\\Software\\FMOD\ Studio\ API\ Universal\ Windows\ Platform]")
+	else()
+		set(FMOD_SEARCH_PATH "${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/windows-uwp")
+	endif()
 		
 	set(FMOD_DLL_SUFFIX ".dll")
 	set(FMOD_LIB_SUFFIX ".lib")
@@ -17,20 +17,28 @@ if (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 else()
 	# Desktop Windows builds
 		
-	find_path(EZ_FMOD_DIR api/core/inc/fmod.h
-		PATHS
-		[HKEY_CURRENT_USER\\Software\\FMOD\ Studio\ API\ Windows]
-		${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/windows
-	)
+	if (EZ_FMOD_USE_CUSTOM_INSTALLATION)
+		set(FMOD_SEARCH_PATH "[HKEY_CURRENT_USER\\Software\\FMOD\ Studio\ API\ Windows]")
+	else()
+		set(FMOD_SEARCH_PATH "${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/windows")
+	endif()
 
 	set(FMOD_DLL_SUFFIX ".dll")
 	set(FMOD_LIB_SUFFIX "_vc.lib")
 
 endif()
 
-set (FMOD_DIR_STUDIO "${EZ_FMOD_DIR}/api/studio")
-set (FMOD_DIR_FSBANK "${EZ_FMOD_DIR}/api/fsbank")
-set (FMOD_DIR_CORE "${EZ_FMOD_DIR}/api/core")
+if (NOT EZ_FMOD_SDK_LOCATION OR EZ_FMOD_SDK_LOCATION STREQUAL "")
+	set(EZ_FMOD_SDK_LOCATION "EZ_FMOD_SDK_LOCATION-NOTFOUND")
+endif()
+
+find_path(EZ_FMOD_SDK_LOCATION api/core/inc/fmod.h PATHS ${FMOD_SEARCH_PATH})
+
+message(STATUS "EZ_FMOD_SDK_LOCATION is ${EZ_FMOD_SDK_LOCATION}")
+
+set (FMOD_DIR_STUDIO "${EZ_FMOD_SDK_LOCATION}/api/studio")
+set (FMOD_DIR_FSBANK "${EZ_FMOD_SDK_LOCATION}/api/fsbank")
+set (FMOD_DIR_CORE "${EZ_FMOD_SDK_LOCATION}/api/core")
 
 if (EZ_CMAKE_ARCHITECTURE_ARM)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -47,7 +55,7 @@ else()
 endif()
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(EzFmod DEFAULT_MSG EZ_FMOD_DIR)
+find_package_handle_standard_args(EzFmod DEFAULT_MSG EZ_FMOD_SDK_LOCATION)
 
 if (EZFMOD_FOUND)
 
@@ -83,4 +91,4 @@ if (EZFMOD_FOUND)
 
 endif()
 
-mark_as_advanced(FORCE EZ_FMOD_DIR)
+mark_as_advanced(FORCE EZ_FMOD_SDK_LOCATION)
