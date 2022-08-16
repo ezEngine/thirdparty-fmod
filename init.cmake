@@ -2,7 +2,13 @@
 ### Fmod support
 ######################################
 
-set (EZ_BUILD_FMOD ON CACHE BOOL "Whether support for FMOD should be added")
+if(EZ_CMAKE_PLATFORM_WINDOWS)
+  set (EZ_BUILD_FMOD ON CACHE BOOL "Whether support for FMOD should be added")
+else()
+  set (EZ_BUILD_FMOD OFF CACHE BOOL "Whether support for FMOD should be added" FORCE)
+endif()
+
+
 set (EZ_FMOD_USE_CUSTOM_INSTALLATION OFF CACHE BOOL "If enabled, the built-in FMOD version is ignored and any installed version is used instead. Clear EZ_FMOD_SDK_LOCATION to let CMake reevaluate the path.")
 
 mark_as_advanced(FORCE EZ_FMOD_USE_CUSTOM_INSTALLATION)
