@@ -19,7 +19,7 @@ mark_as_advanced(FORCE EZ_FMOD_USE_CUSTOM_INSTALLATION)
 
 macro(ez_requires_fmod)
 
-  ez_requires_one_of(EZ_CMAKE_PLATFORM_WINDOWS EZ_CMAKE_PLATFORM_LINUX)
+	ez_requires_one_of(EZ_CMAKE_PLATFORM_WINDOWS EZ_CMAKE_PLATFORM_LINUX)
 	ez_requires(EZ_BUILD_FMOD)
 
 endmacro()
