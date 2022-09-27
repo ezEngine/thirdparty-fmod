@@ -2,7 +2,13 @@ ez_cmake_init()
 
 ez_requires_fmod()
 
-if (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
+if(EZ_CMAKE_PLATFORM_LINUX)
+	set(FMOD_SEARCH_PATH "${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/linux")
+
+	set(FMOD_DLL_SUFFIX ".so")
+	set(FMOD_LIB_SUFFIX ".a")
+	set(FMOD_PREFIX "lib")
+elseif (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 	# UWP builds
 
 	if (EZ_FMOD_USE_CUSTOM_INSTALLATION)
@@ -13,6 +19,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
 		
 	set(FMOD_DLL_SUFFIX ".dll")
 	set(FMOD_LIB_SUFFIX ".lib")
+	set(FMOD_PREFIX "")
 		
 else()
 	# Desktop Windows builds
@@ -25,6 +32,7 @@ else()
 
 	set(FMOD_DLL_SUFFIX ".dll")
 	set(FMOD_LIB_SUFFIX "_vc.lib")
+	set(FMOD_PREFIX "")
 
 endif()
 
@@ -65,26 +73,26 @@ if (EZFMOD_FOUND)
 	#set(FMOD_DEBUG_SUFFIX, "L")
 
 	add_library(ezFmod::Core SHARED IMPORTED GLOBAL)
-	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/fmod${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/fmod${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/fmod${FMOD_LIB_SUFFIX}")
-	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/fmod${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmod${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmod${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmod${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::Core PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_CORE}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmod${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
 	set_target_properties(ezFmod::Core PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FMOD_DIR_CORE}/inc")
 	ez_uwp_mark_import_as_content(ezFmod::Core)
 
 	add_library(ezFmod::FsBank SHARED IMPORTED GLOBAL)
-	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/fsbank${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/fsbank${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/fsbank${FMOD_LIB_SUFFIX}")
-	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/fsbank${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fsbank${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fsbank${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fsbank${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::FsBank PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_FSBANK}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fsbank${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
 	set_target_properties(ezFmod::FsBank PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FMOD_DIR_FSBANK}/inc")
 	ez_uwp_mark_import_as_content(ezFmod::FsBank)
 
 	add_library(ezFmod::Studio SHARED IMPORTED GLOBAL)
-	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/fmodstudio${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/fmodstudio${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
-	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/fmodstudio${FMOD_LIB_SUFFIX}")
-	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/fmodstudio${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_LOCATION "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmodstudio${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_LOCATION_DEBUG "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmodstudio${FMOD_DEBUG_SUFFIX}${FMOD_DLL_SUFFIX}")
+	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_IMPLIB "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmodstudio${FMOD_LIB_SUFFIX}")
+	set_target_properties(ezFmod::Studio PROPERTIES IMPORTED_IMPLIB_DEBUG "${FMOD_DIR_STUDIO}/lib/${FMOD_LIB_ARCH}/${FMOD_PREFIX}fmodstudio${FMOD_DEBUG_SUFFIX}${FMOD_LIB_SUFFIX}")
 	set_target_properties(ezFmod::Studio PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${FMOD_DIR_STUDIO}/inc")
 	target_link_libraries(ezFmod::Studio INTERFACE ezFmod::Core)
 	ez_uwp_mark_import_as_content(ezFmod::Studio)
