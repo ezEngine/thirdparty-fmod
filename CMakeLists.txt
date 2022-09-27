@@ -5,7 +5,7 @@ ez_requires_fmod()
 if(EZ_CMAKE_PLATFORM_LINUX)
 	set(FMOD_SEARCH_PATH "${CMAKE_SOURCE_DIR}/Code/ThirdParty/fmod/linux")
 
-	set(FMOD_DLL_SUFFIX ".so")
+	set(FMOD_DLL_SUFFIX ".so.12")
 	set(FMOD_LIB_SUFFIX ".a")
 	set(FMOD_PREFIX "lib")
 elseif (CMAKE_SYSTEM_NAME STREQUAL "WindowsStore")
