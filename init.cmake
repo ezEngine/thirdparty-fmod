@@ -21,7 +21,7 @@ macro(ez_requires_fmod)
 
 	ez_requires_one_of(EZ_CMAKE_PLATFORM_WINDOWS EZ_CMAKE_PLATFORM_LINUX)
 	ez_requires(EZ_BUILD_FMOD)
-
+  
 endmacro()
 
 ######################################
