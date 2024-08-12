@@ -97,6 +97,8 @@ if (EZFMOD_FOUND)
 	target_link_libraries(ezFmod::Studio INTERFACE ezFmod::Core)
 	ez_uwp_mark_import_as_content(ezFmod::Studio)
 
+else()
+  message(FATAL_ERROR "EZ_BUILD_FMOD is ON but couldn't find fmod headers/libraries")
 endif()
 
 mark_as_advanced(FORCE EZ_FMOD_SDK_LOCATION)
