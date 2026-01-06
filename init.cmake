@@ -32,7 +32,7 @@ function(ez_link_target_fmod TARGET_NAME)
 
 	ez_requires_fmod()
 
-    target_link_libraries(${TARGET_NAME} PUBLIC ezFmod::Studio)
+    target_link_libraries(${TARGET_NAME} PRIVATE ezFmod::Studio)
 
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:ezFmod::Studio> $<TARGET_FILE_DIR:${TARGET_NAME}>
